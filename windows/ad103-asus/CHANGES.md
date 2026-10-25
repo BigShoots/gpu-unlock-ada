@@ -1,3 +1,12 @@
+# AD103/ASUS AM5 port - 2026-10-25
+
+- Retarget the AD104 profile to one MSI RTX 4070 Ti SUPER (AD103) on an ASUS ROG STRIX B650E-I from a read-only probe capture.
+- Port the ownership adapter: two outputs, EDID consumer detached first, five-stage release, four AMD xHCI hosts, four pinned driver code ranges.
+- Handle the firmware's stale PCI IO attribute without changing config space; restore memory decode only.
+- Move the ESP layout and boot manager pin into the ignored local profile.
+- Replay the real captured graph in the ownership test; log each preflight step.
+- First hardware run: transaction completed and Windows returned. FP16/BF16 GEMM +73%, FP32 unchanged, numerical checks passed.
+
 # Latence.app AD104 Windows changes — 2026-10-24
 
 - Adapt the pinned Ada transaction to checked UEFI PCI I/O, DMA and explicit error/retention state for the captured AD104 profile.

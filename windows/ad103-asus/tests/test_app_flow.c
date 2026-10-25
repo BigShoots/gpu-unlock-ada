@@ -31,7 +31,7 @@ VOID GuBootSilence(VOID){CHECK(Calls==6);Silenced=TRUE;}
 EFI_STATUS GuMsiRelease(VOID){CHECK(Silenced);Releases++;Mutated=TRUE;Gu.owned=TRUE;return Tick(7);}
 BOOLEAN GuMsiReleased(VOID){return Mutated&&Gu.owned;}
 BOOLEAN GuAd104ColdEntry(VOID){return TRUE;}
-int gpu_unlock_610_load_shared(struct pci_dev *d,struct gpu_unlock_610_shared *shared){CHECK(d->device==0x2782&&Gu.owned&&Gu.armed&&Gu.display_ok);(void)shared;return Tick(8)==EFI_SUCCESS?0:-EIO;}
+int gpu_unlock_610_load_shared(struct pci_dev *d,struct gpu_unlock_610_shared *shared){CHECK(d->device==GU_BOARD_DEVICE&&Gu.owned&&Gu.armed&&Gu.display_ok);(void)shared;return Tick(8)==EFI_SUCCESS?0:-EIO;}
 int gpu_unlock_610_unlock(struct pci_dev *d,const struct gpu_unlock_610_shared *s){(void)d;(void)s;Transactions++;Gu.started=TRUE;Gu.quiesced=TRUE;Gu.flrs=1;return Tick(9)==EFI_SUCCESS?0:-EIO;}
 void gpu_unlock_610_release_shared(struct gpu_unlock_610_shared *s){(void)s;}
 BOOLEAN GuSafeToReturn(VOID){return TRUE;}

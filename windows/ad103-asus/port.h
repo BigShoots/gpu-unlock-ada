@@ -4,10 +4,12 @@
 #include <Protocol/DevicePath.h>
 #include <stddef.h>
 
-#define GU_BOARD_ID 0x278210deU
-#define GU_BOARD_SUBSYSTEM 0x51321462U
-#define GU_BAR0_BASE 0x80000000ULL
-#define GU_DEVICE_MEMORY_SIZE 0x2ffaU
+#define GU_BOARD_DEVICE 0x2705U
+#define GU_BOARD_ID 0x270510deU
+#define GU_BOARD_SUBSYSTEM 0xe1301462U
+#define GU_BOARD_CHIP 0x193000a1U
+#define GU_BAR0_BASE 0xde000000ULL
+#define GU_DEVICE_MEMORY_SIZE 0x3ff8U
 /* The default artifact is read-only. Legacy host containment tests are never
    a production enable switch; experimental firmware requires its own define. */
 #if defined(GU_AD104_HOST_TEST) && __STDC_HOSTED__ != 1

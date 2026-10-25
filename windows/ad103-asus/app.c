@@ -39,7 +39,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image,EFI_SYSTEM_TABLE *t) {
   s=GuBootOpen(image,t);if(s!=EFI_SUCCESS)return s;
   const char *stage="discover";BOOLEAN unlock=FALSE;
   s=Discover(image,t);if(s!=EFI_SUCCESS)goto failed;
-  GuLog("AD104 MSI EXPERIMENTAL v0.5.4: hardware unvalidated; USB manual one-shot; bounded USB enumeration additions/removals; GPU ownership pinned\n");
+  GuLog("AD103 ASUS EXPERIMENTAL v0.5.4-ad103: hardware unvalidated; USB manual one-shot; bounded USB enumeration additions/removals; GPU ownership pinned\n");
   stage="assets";s=GuBootLoadAssets();if(s!=EFI_SUCCESS||Gu.fault)goto failed;
   stage="read-only-cold-profile";s=GuAd104Prepare();if(s!=EFI_SUCCESS||Gu.fault)goto failed;
   stage="stage-windows-image";s=GuBootLoadWindows();if(s!=EFI_SUCCESS||Gu.fault)goto failed;
@@ -58,7 +58,7 @@ EFI_STATUS EFIAPI UefiMain(EFI_HANDLE image,EFI_SYSTEM_TABLE *t) {
   if(!GuMsiReleased()||!GuAd104ColdEntry()){s=EFI_NOT_READY;goto failed;}
   Gu.display_check=GuMsiReleased;Gu.display_ok=TRUE;Gu.armed=TRUE;
   UINT64 mask=0xffffffffffffULL;
-  struct pci_dev dev={.vendor=0x10de,.device=0x2782,.dev={.dma_mask=&mask,.coherent_dma_mask=0xfffffffffULL},
+  struct pci_dev dev={.vendor=0x10de,.device=GU_BOARD_DEVICE,.dev={.dma_mask=&mask,.coherent_dma_mask=0xfffffffffULL},
     .current_state=PCI_D0,.pm_cap=Gu.pm_cap,.refs=1};
   struct gpu_unlock_610_shared shared={0};
   stage="shared-assets";int result=gpu_unlock_610_load_shared(&dev,&shared);

@@ -1,13 +1,25 @@
-# AD103 / ASUS AM5 port (work in progress)
+# AD103 / ASUS AM5 port (hardware-validated on one system)
 
-Port of the AD104 reference below to one **MSI RTX 4070 Ti SUPER** (`10de:2705`, subsystem `1462:e130`, AD103) on an **ASUS ROG STRIX B650E-I** (AM5). The Linux module's exact-card `0x2705` canary supplies the GPU transaction; the board-specific values below are not yet captured.
+Port of the AD104 reference below to one **MSI RTX 4070 Ti SUPER** (`10de:2705`, subsystem `1462:e130`, AD103) on an **ASUS ROG STRIX B650E-I** (AM5). The Linux module's exact-card `0x2705` canary supplies the GPU transaction; every board-specific value is pinned from a read-only probe capture (`CAP0001`) of the target PC. Like the AD104 reference this is one exact system, not a universal installer: do not widen a guard to boot another machine.
 
-Status:
+| cuBLAS 4096² GEMM | Stock TFLOP/s | Unlocked TFLOP/s | Change |
+|---|---:|---:|---:|
+| FP32 pedantic | 32.57 | 32.42 | -0.5% (noise) |
+| FP16 with FP32 accumulation | 90.65 | 157.31 | **+73.5%** |
+| BF16 with FP32 accumulation | 90.39 | 156.29 | **+72.9%** |
 
-1. Done: `diagnostic/` probe retargeted to AD103 (`build/AD103-PROBE.EFI`). It still never writes GPU registers. PCI location and BAR0 base are recorded instead of pinned to the Z490 values.
-2. Pending: one cold-boot probe capture on the target PC (PROM, FWSEC layout, cold registers, config space, GOP/console owners, ESP layout).
-3. Pending: replace every AD104/MSI Z490 pin in `profile.c`, `checks.c`, `msi_release.c`, `boot_io.c` and `port.h` with captured values; no guard is widened.
-4. Pending: private-input host tests, then one manual cold attempt.
+One benchmark process per phase, run on a cold boot with no other GPU load (a miner was stopped). All numerical checks passed. This is one successful manual launch and short GEMM tests, not application speedup or stability qualification. The unlock lasts only until a full power-off; repeat the USB run on every boot.
+
+What changed from the AD104 port:
+
+1. `diagnostic/` is retargeted to AD103 (`AD103-PROBE.EFI`, read-only, never writes GPU registers).
+2. Profile pins (`profile.c`, `port.h`, `vendor/unlock_610.c`): AD103 device and subsystem, BAR0, PROM hash, FWSEC layout, cold registers and `SS1==2`.
+3. Ownership adapter (`msi_release.c`, kept under its historical name): two display outputs, a fourth firmware driver (the EDID consumer) detached first, a five-stage release, and four AMD xHCI hosts. All four driver code ranges are hash-pinned.
+4. PCI attributes: this firmware caches an IO attribute although IO decode is off. Preflight drops that stale bit; after release, restoring memory decode reproduces config space and attributes exactly. Any other mismatch still refuses.
+5. The ESP layout and boot manager pin moved into the git-ignored `local/boot_profile.h` (see `boot_profile.example.h`). Pin the copy on the real ESP, which can differ from `C:\Windows\Boot\EFI`.
+6. Tests replay the real captured graph, config and driver code: 90 + 17 core/admission, 15 app-flow, 49 ownership/USB and 8 I/O scenarios, all with simulated effects.
+
+Build and use it as described below, with the AD103 names: assets in `AD103-ASSETS/`, logs in `AD103-UNLOCK/RUNxxxx.TXT`, output `build/AD104-EXPERIMENTAL.EFI` (name kept). Private inputs come from `python tools/extract_private_capture.py CAP0001.JSON --out local/capture`.
 
 Everything below describes the original AD104 reference and is unchanged.
 

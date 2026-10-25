@@ -7,16 +7,16 @@
 static struct pci_dev Device;
 static UINT64 Mask;
 static VOID fresh(VOID) {
-  test_entry_ss0=0x23613005;test_entry_ss1=1;setup(SUCCESS);
+  test_entry_ss0=0x60713165;test_entry_ss1=2;setup(SUCCESS);
   Mask=0xffffffffffffULL;
-  Device=(struct pci_dev){.vendor=0x10de,.device=0x2782,
+  Device=(struct pci_dev){.vendor=0x10de,.device=GU_BOARD_DEVICE,
     .dev={.dma_mask=&Mask,.coherent_dma_mask=0xfffffffffULL},.pm_cap=0x60,.refs=1};
 }
 static VOID rejected(const char *name,struct gpu_unlock_610_shared *shared) {
   CHECK(gpu_unlock_610_unlock(&Device,shared)!=0);
   CHECK(!Gu.started && !fake.mmio_writes && !fake.gsp_starts && !fake.sec2_starts && !fake.flrs);
   CHECK(!fake.live_maps && !fake.live_buffers && !Gu.allocations);
-  CHECK(!fake.master_enables);printf("AD104 guard %s PASS\n",name);
+  CHECK(!fake.master_enables);printf("AD103 guard %s PASS\n",name);
 }
 int main(int argc,char **argv) {
   CHECK(argc==3);load_fixture_assets(argv[1],argv[2]);
@@ -38,7 +38,7 @@ int main(int argc,char **argv) {
       case 5:Gu.owned=FALSE;break;
       case 6:Gu.display_check=NULL;break;
       case 7:registers[0x823818/4]^=1;break;
-      case 8:Device.device=0x2705;break;
+      case 8:Device.device=0x2782;break;
       case 9:Gu.transaction_attempted=TRUE;break;
     }
     rejected("identity/cold state/ownership/retry",&shared);

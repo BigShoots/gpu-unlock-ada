@@ -6,11 +6,12 @@ import hashlib
 import json
 from pathlib import Path
 
-PROM = 'c81eb48fc6cb4f320d302e98f88db7101dfc1e4c3e21de82f57a6c8233ad3fb4'
+PROM = '17137e23c4949913e634bd0d309321648ff5ac7ac48f4eb37c0cc91d61f96add'
 CODE = {
-    '3ff0f364e3ce0ddd1a1c28b9d66abf49822451fb126e4cbec59daf6be9ed75b8': (307, 19872),
-    '1bb42730366614ba5207025300e0b75be2283f7632555569f18cdcc5a0456083': (312, 7280),
-    '77632902f0ceb0ba2848200f396ab61eacd7910e9cce7c535f65d6cdbe2b6c32': (393, 137711),
+    '53ef1716fa7a8cf866c986e85dd8412185a9fd58dd89e90202f97cb0997c96a6': (158, 14584),
+    'b689e24eb05256b38eb1ad2e5544c5b8f1b6e59409bfd13d2bee7be5a95211a1': (451, 24961),
+    '6702c960bb457e20a93174ada93444d1e1a87d2858caac23878255516248b8e8': (456, 10525),
+    '216c7270fa08ad9e4c3694d34d825e9e904554a1af5ffa2aeead4317c5537b37': (554, 138183),
 }
 
 def main():
@@ -26,7 +27,7 @@ def main():
     rom = bytes.fromhex(j['physical_prom']['hex'])
     if len(rom) != 1048576 or hashlib.sha256(rom).hexdigest() != PROM:
         p.error('ROM differs from the reviewed profile; do not bypass admission')
-    files = {'ad104-physical-prom.bin': rom}
+    files = {'ad103-physical-prom.bin': rom}
     for agent in j['platform']['gpu_agents']:
         code = agent['code']
         data = bytes.fromhex(code['hex'])
@@ -38,12 +39,12 @@ def main():
         if len(data) != size or name in files:
             p.error('Duplicate or truncated code snapshot')
         files[name] = data
-    if len(files) != 4:
-        p.error('All three reviewed driver profiles are required')
+    if len(files) != 5:
+        p.error('All four reviewed driver profiles are required')
     a.out.mkdir(parents=True, exist_ok=False)
     for name, data in files.items():
         (a.out / name).write_bytes(data)
-    print('Extracted 4 private files. Keep them out of Git and public uploads.')
+    print('Extracted 5 private files. Keep them out of Git and public uploads.')
 
 if __name__ == '__main__':
     main()
